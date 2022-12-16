@@ -1,6 +1,7 @@
-import './card.css'
-import { useState, useEffect, useRef } from 'react'
-import Form from '../Form/Form'
+import "./card.css"
+import { useState, useEffect } from "react"
+import Form from "../Form/Form"
+import FilterCountry from "./Select/Select"
 
 export function Card(props) {
   const [data, setData] = useState([
@@ -13,7 +14,7 @@ export function Card(props) {
 
   const getCountries = async () => {
     try {
-      const res = await fetch('https://restcountries.com/v3.1/all')
+      const res = await fetch("https://restcountries.com/v3.1/all")
       const data = await res.json()
 
       setData({
@@ -53,14 +54,16 @@ export function Card(props) {
   // })
   const getCountriesByName = async (countryName) => {
     try {
-      const res = await fetch(`https://restcountries.com/v3.1/name/${countryName}`)
-      if(!res.ok) throw new Error("Not found country")
+      const res = await fetch(
+        `https://restcountries.com/v3.1/name/${countryName}`
+      )
+      if (!res.ok) throw new Error("Not found country")
 
       const data = await res.json()
       setData({
-        loading:false,
+        loading: false,
         data: data,
-        isError: false
+        isError: false,
       })
     } catch (error) {
       setData({
@@ -72,14 +75,37 @@ export function Card(props) {
   }
   const getCountriesSelect = async (countrySelect) => {
     try {
-      const res = await fetch(`https://restcountries.com/v3.1/region/${countrySelect}`)
-      if(!res.ok) throw new Error("Not found country")
+      const res = await fetch(
+        `https://restcountries.com/v3.1/region/${countrySelect}`
+      )
+      if (!res.ok) throw new Error("Not found country")
 
       const data = await res.json()
       setData({
-        loading:false,
+        loading: false,
         data: data,
-        isError: false
+        isError: false,
+      })
+    } catch (error) {
+      setData({
+        loading: false,
+        data: [],
+        isError: true,
+      })
+    }
+  }
+
+  const getCountryByRegion = async (regionName) => {
+    try {
+      const res = await fetch(
+        `https://restcountries.com/v3.1/region/${regionName}`
+      )
+      if (!res.ok) throw new Error("Failed...")
+      const data = await res.json()
+      setData({
+        loading: false,
+        data: data,
+        isError: false,
       })
     } catch (error) {
       setData({
@@ -91,7 +117,10 @@ export function Card(props) {
   }
   return (
     <>
-      <Form onSearch={getCountriesByName} />
+      <div className="form-box">
+        <Form onSearch={getCountriesByName} />
+        <FilterCountry onSelect={getCountryByRegion} />
+      </div>
       <ul className="country-list">
         {data.loading && <h1>Loading...</h1>}
         {data.isError && <h1>Error...</h1>}
